@@ -1,0 +1,10 @@
+{
+  "name": "FrameWorkCore",
+  "version": "1.0.0",
+  "displayName": "Framework Core",
+  "description": "Unity 범용 게임 프레임워크 (싱글톤, 이벤트 버스, 씬/오디오/풀/저장 매니저).",
+  "unity": "6000.0",
+  "author": {
+    "name": "nyapy"
+  }
+}
