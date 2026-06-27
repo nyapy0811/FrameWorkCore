@@ -2,9 +2,18 @@
 
 Unity 6 범용 게임 프레임워크. 네임스페이스 `Framework.Core`, 어셈블리 `Framework.Core`.
 
+## 의존성 (필수)
+
+이 패키지는 [UniTask](https://github.com/Cysharp/UniTask)에 의존한다. **먼저 UniTask를 설치**해야 컴파일된다.
+게임 프로젝트의 `Packages/manifest.json` 에 추가:
+
+```json
+"com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+```
+
 ## 설치 (Git UPM)
 
-게임 프로젝트의 `Packages/manifest.json` 의 `dependencies` 에 추가:
+UniTask 설치 후, 게임 프로젝트의 `Packages/manifest.json` 의 `dependencies` 에 추가:
 
 ```json
 "com.nyapy.framework-core": "https://github.com/nyapy0811/FrameWorkCore.git"
@@ -57,7 +66,9 @@ PoolManager.Instance.Spawn(bulletPrefab, pos, Quaternion.identity);
 EventBus.Publish(new ScoreChanged { NewScore = 100 });
 SaveManager.Instance.Current.gold += 50;
 SaveManager.Instance.Save();
-SceneLoader.Instance.Load("Stage2");
+
+SceneLoader.Instance.Load("Stage2");          // 발사 후 잊기
+await SceneLoader.Instance.LoadAsync("Stage2"); // 완료까지 대기 (UniTask)
 ```
 
 ## 버전 업데이트
