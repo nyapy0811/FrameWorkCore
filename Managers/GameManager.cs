@@ -6,8 +6,11 @@ namespace Framework.Core
     {
         Boot,       // 초기화 중
         MainMenu,   // 메뉴
+        Loading,    // 스테이지 이동/메뉴 복귀 등 전환 대기(딜레이)
         Playing,    // 게임 진행
-        Paused      // 일시정지
+        Paused,     // 일시정지
+        Cleared,    // 스테이지 클리어
+        Quitting    // 종료 전 저장 등 마무리 작업
     }
 
     /// <summary>
@@ -51,6 +54,34 @@ namespace Framework.Core
             if (State != GameState.Paused) return;
             Time.timeScale = 1f;
             ChangeState(GameState.Playing);
+        }
+
+        /// <summary>스테이지 클리어. 진행 중일 때만 유효.</summary>
+        public void StageClear()
+        {
+            if (State != GameState.Playing) return;
+            ChangeState(GameState.Cleared);
+        }
+
+        /// <summary>
+        /// 로딩 상태로 전환. 스테이지 이동이나 메뉴 복귀 전 딜레이 부여용.
+        /// 일시정지로 멈춰 있던 시간을 원복하고 넘어간다.
+        /// </summary>
+        public void BeginLoading()
+        {
+            Time.timeScale = 1f;
+            ChangeState(GameState.Loading);
+        }
+
+        /// <summary>
+        /// 종료 절차. Quitting 상태로 바꾼 뒤 앱을 끈다.
+        /// 저장 등 마무리 작업은 OnStateChanged(Quitting)를 구독한 쪽에서 처리한다.
+        /// (구독자는 ChangeState 안에서 동기적으로 실행되므로 Quit 전에 완료된다.)
+        /// </summary>
+        public void Quit()
+        {
+            ChangeState(GameState.Quitting);
+            Application.Quit();
         }
     }
 }
