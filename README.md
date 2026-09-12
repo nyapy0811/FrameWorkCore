@@ -44,7 +44,8 @@ FrameWorkCore/            (패키지 루트)
 ## 포함 시스템
 
 - `MonoSingleton<T>` — 싱글톤 베이스
-- `GameManager` — 게임 상태(Boot/MainMenu/Playing/Paused)
+- `GameManagerBase<TSelf, TState>` — 게임 상태머신 베이스. 상태 enum은 프레임워크가 모르며,
+  사용 프로젝트가 자기 `TState` enum과 `GameManager` 구체 클래스를 정의해서 상속한다.
 - `EventBus` / `IEvent` — 전역 이벤트 버스
 - `SceneLoader` / `SceneEvents` — 비동기 씬 로딩 (진행률 이벤트)
 - `AudioManager` — BGM/SFX 재생
@@ -57,10 +58,24 @@ FrameWorkCore/            (패키지 루트)
 using Framework.Core;
 ```
 
+`GameManagerBase<TSelf, TState>`만 예외로, 프로젝트 쪽에서 자기 상태 enum과 구체
+`GameManager` 클래스를 직접 정의해야 한다:
+
+```csharp
+public enum GameState { Boot, MainMenu, Playing, Paused }
+
+public class GameManager : GameManagerBase<GameManager, GameState>
+{
+    protected override void OnAwake() => ChangeState(GameState.MainMenu);
+    public void StartGame() => ChangeState(GameState.Playing);
+    // Pause/Resume/StageClear/BeginLoading/Quit 등 프로젝트별 편의 메서드도 여기 정의
+}
+```
+
 ## 빠른 예시
 
 ```csharp
-GameManager.Instance.StartGame();
+GameManager.Instance.StartGame(); // 위에서 정의한 프로젝트 쪽 GameManager
 AudioManager.Instance.PlayBGM(bgmClip);
 PoolManager.Instance.Spawn(bulletPrefab, pos, Quaternion.identity);
 EventBus.Publish(new ScoreChanged { NewScore = 100 });
